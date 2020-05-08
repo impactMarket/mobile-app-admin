@@ -1,49 +1,115 @@
+import './global';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, AsyncStorage } from 'react-native';
-import { DataTable, Button } from 'react-native-paper';
-import { newKit, ContractKit } from '@celo/contractkit';
+import { StyleSheet, View, AsyncStorage, YellowBox } from 'react-native';
+import { DataTable, Button, Paragraph } from 'react-native-paper';
+// import { newKit, ContractKit } from '@celo/contractkit';
 import {
     requestAccountAddress,
     waitForAccountAuth,
+    requestTxSig,
+    FeeCurrency,
+    waitForSignedTxs,
 } from '@celo/dappkit'
 import { Linking } from 'expo'
 import { ICommunity } from './types';
 import { getAllPendingCommunities, getAllValidCommunities } from './api';
-import config from './config';
+// import config from './config';
+import Network from './network.json';
+import ImpactMarketAbi from './ImpactMarketABI.json';
+import { kit } from './root';
+import { toTxResult } from '@celo/contractkit/lib/utils/tx-result';
+
+
+YellowBox.ignoreWarnings(['Warning: The provided value \'moz', 'Warning: The provided value \'ms-stream']);
 
 
 const WALLET_ADDRESS = 'WALLET_ADDRESS';
 
 
 export default function App() {
+    const [loading, setLoading] = useState(false);
+    const [loaded, setLoaded] = useState(false);
     const [pendingCommunities, setPendingCommunities] = useState<ICommunity[]>([]);
     const [validCommunities, setValidCommunities] = useState<ICommunity[]>([]);
     const [acceptingCommunityRequest, setAcceptingCommunityRequest] = useState<string>('');
-    const [kit, setKit] = useState<ContractKit>();
+    // const [kit, setKit] = useState<ContractKit>();
     const [userAddress, setUserAddress] = useState<string | null>(null);
 
     useEffect(() => {
-        const getUserWalletFromLocal = async () => {
-            let value = null;
-            try {
-                value = await AsyncStorage.getItem(WALLET_ADDRESS);
-            } catch (error) {
-                // Error retrieving data
-            }
-            return value;
-        };
+        const loadCommunities = async () => {
+            const getUserWalletFromLocal = async () => {
+                let value = null;
+                try {
+                    value = await AsyncStorage.getItem(WALLET_ADDRESS);
+                } catch (error) {
+                    // Error retrieving data
+                }
+                return value;
+            };
+            // setKit(newKit(config.jsonRpc));
+            const _userAddress = await getUserWalletFromLocal();
+            setUserAddress(_userAddress);
+            const _pendingCommunities = await getAllPendingCommunities();
+            setPendingCommunities(_pendingCommunities);
+            const _acceptingCommunityRequest = await getAllValidCommunities();
+            setValidCommunities(_acceptingCommunityRequest);
+            setLoaded(true);
+            setLoading(false);
+        }
+        if (!loading && !loaded) {
+            setLoading(true);
+            loadCommunities();
+        }
+    }, []);
 
-        setKit(newKit(config.jsonRpc));
-        getAllPendingCommunities().then(setPendingCommunities);
-        getAllValidCommunities().then(setValidCommunities);
-        getUserWalletFromLocal().then(setUserAddress)
-    });
-
-    const handleAcceptCommunity = (community: ICommunity) => {
+    const handleAcceptCommunity = async (community: ICommunity) => {
         setAcceptingCommunityRequest(community.publicId);
-        // TODO: send transaction
-        // TODO: hold until transaction is done
-        // TODO: update tables
+
+        if (kit === undefined) {
+            // TODO: do something beatiful, la la la
+            return;
+        }
+        const impactMarketContract = new kit.web3.eth.Contract(
+            ImpactMarketAbi as any,
+            Network.alfajores.ImpactMarket,
+        );
+        if (impactMarketContract === undefined) {
+            // TODO: do something beatiful, la la la
+            return;
+        }
+        // this.setState({ claiming: true });
+        const txObject = await impactMarketContract.methods.addCommunity(
+            community.requestByAddress,
+            community.requestByAddress,
+            community.txCreationObj.amountByClaim,
+            community.txCreationObj.baseInterval,
+            community.txCreationObj.incrementalInterval,
+            community.txCreationObj.claimHardcap,
+        );
+        const requestId = 'create_community';
+        const dappName = 'Impact Market - Admin'
+        const callback = Linking.makeUrl('/my/path')
+        requestTxSig(
+            kit,
+            [
+                {
+                    from: userAddress!,
+                    to: Network.alfajores.ImpactMarket,
+                    tx: txObject,
+                    feeCurrency: FeeCurrency.cUSD
+                }
+            ],
+            { requestId, dappName, callback }
+        )
+        const dappkitResponse = await waitForSignedTxs(requestId);
+        const tx = dappkitResponse.rawTxs[0];
+        toTxResult(kit.web3.eth.sendSignedTransaction(tx)).waitReceipt().then((result) => {
+            // TODO: hold until transaction is done
+            setAcceptingCommunityRequest('');
+            // TODO: update tables
+            getAllPendingCommunities().then(setPendingCommunities);
+            getAllValidCommunities().then(setValidCommunities);
+        });
     }
 
     const handleLoginWithCelo = async () => {
@@ -77,6 +143,7 @@ export default function App() {
 
     return (
         <View style={styles.container}>
+            <Paragraph>{userAddress}</Paragraph>
             <DataTable>
                 <DataTable.Header>
                     <DataTable.Title>Name</DataTable.Title>
@@ -88,7 +155,8 @@ export default function App() {
                 {pendingCommunities.map((community) =>
                     <DataTable.Row
                         key={community.publicId}
-                        onPress={() => handleAcceptCommunity(community)}
+                        onPress={() => (handleAcceptCommunity(community) as any)}
+                        disabled={acceptingCommunityRequest === community.publicId}
                     >
                         <DataTable.Cell>{community.name}</DataTable.Cell>
                         <DataTable.Cell>{community.location.title}</DataTable.Cell>
