@@ -2,6 +2,8 @@
     "expo": {
         "name": "impactMarket-admin",
         "slug": "impactMarket-admin",
+        "privacy": "public",
+        "sdkVersion": "36.0.0",
         "platforms": [
             "ios",
             "android",
@@ -10,6 +12,7 @@
         "version": "1.0.0",
         "orientation": "portrait",
         "icon": "./assets/icon.png",
+        "scheme": "celodappkit",
         "splash": {
             "image": "./assets/splash.png",
             "resizeMode": "contain",
@@ -23,6 +26,8 @@
         ],
         "ios": {
             "supportsTablet": true
-        }
+        },
+        "description": "Admin ImpactMarket",
+        "githubUrl": "https://github.com/impactMarket/mobile-app-admin"
     }
 }
