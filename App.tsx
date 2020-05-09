@@ -1,6 +1,6 @@
 import './global';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, AsyncStorage, YellowBox } from 'react-native';
+import { StyleSheet, View, AsyncStorage, YellowBox, Alert } from 'react-native';
 import { DataTable, Button, Paragraph } from 'react-native-paper';
 // import { newKit, ContractKit } from '@celo/contractkit';
 import {
@@ -12,7 +12,7 @@ import {
 } from '@celo/dappkit'
 import { Linking } from 'expo'
 import { ICommunity } from './types';
-import { getAllPendingCommunities, getAllValidCommunities } from './api';
+import { getAllPendingCommunities, getAllValidCommunities, acceptCreateCommunity } from './api';
 // import config from './config';
 import Network from './network.json';
 import ImpactMarketAbi from './ImpactMarketABI.json';
@@ -34,6 +34,7 @@ export default function App() {
     const [acceptingCommunityRequest, setAcceptingCommunityRequest] = useState<string>('');
     // const [kit, setKit] = useState<ContractKit>();
     const [userAddress, setUserAddress] = useState<string | null>(null);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
         const loadCommunities = async () => {
@@ -53,6 +54,14 @@ export default function App() {
             setPendingCommunities(_pendingCommunities);
             const _acceptingCommunityRequest = await getAllValidCommunities();
             setValidCommunities(_acceptingCommunityRequest);
+
+            const impactMarketContract = new kit.web3.eth.Contract(
+                ImpactMarketAbi as any,
+                Network.alfajores.ImpactMarket,
+            );
+            const _isAdmin = await impactMarketContract.methods.isWhitelistAdmin(_userAddress).call();
+            setIsAdmin(_isAdmin);
+            //
             setLoaded(true);
             setLoading(false);
         }
@@ -80,7 +89,6 @@ export default function App() {
         // this.setState({ claiming: true });
         const txObject = await impactMarketContract.methods.addCommunity(
             community.requestByAddress,
-            community.requestByAddress,
             community.txCreationObj.amountByClaim,
             community.txCreationObj.baseInterval,
             community.txCreationObj.incrementalInterval,
@@ -104,11 +112,34 @@ export default function App() {
         const dappkitResponse = await waitForSignedTxs(requestId);
         const tx = dappkitResponse.rawTxs[0];
         toTxResult(kit.web3.eth.sendSignedTransaction(tx)).waitReceipt().then((result) => {
+            // console.log('sendSignedTransaction - result', result);
+            acceptCreateCommunity(result.transactionHash, community.publicId).then((success) => {
+                if (success) {
+                    Alert.alert(
+                        'Success',
+                        'You\'ve accepted the community request!',
+                        [
+                            { text: 'OK' },
+                        ],
+                        { cancelable: false }
+                    );
+                } else {
+                    Alert.alert(
+                        'Failure',
+                        'An error happened while accepting the request!',
+                        [
+                            { text: 'OK' },
+                        ],
+                        { cancelable: false }
+                    );
+                }
+                // TODO: update tables
+                getAllPendingCommunities().then(setPendingCommunities);
+                getAllValidCommunities().then(setValidCommunities);
+            })
+        }).finally(() => {
             // TODO: hold until transaction is done
             setAcceptingCommunityRequest('');
-            // TODO: update tables
-            getAllPendingCommunities().then(setPendingCommunities);
-            getAllValidCommunities().then(setValidCommunities);
         });
     }
 
@@ -141,9 +172,8 @@ export default function App() {
         </View>
     }
 
-    return (
-        <View style={styles.container}>
-            <Paragraph>{userAddress}</Paragraph>
+    const renderCommunities = (
+        <>
             <DataTable>
                 <DataTable.Header>
                     <DataTable.Title>Name</DataTable.Title>
@@ -194,6 +224,16 @@ export default function App() {
                     label="1-1 of 1"
                 />
             </DataTable>
+        </>
+    );
+
+    return (
+        <View style={styles.container}>
+            <Paragraph>{userAddress}</Paragraph>
+            {loading && <Paragraph>Loading...</Paragraph>}
+            {acceptingCommunityRequest.length > 0 && <Paragraph>Sending transaction...</Paragraph>}
+            <Paragraph>isAdmin: {isAdmin ? 'true' : 'false'}</Paragraph>
+            {isAdmin && renderCommunities}
         </View>
     );
 }
