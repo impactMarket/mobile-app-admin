@@ -13,8 +13,7 @@ import {
 import { Linking } from 'expo'
 import { ICommunity } from './types';
 import { getAllPendingCommunities, getAllValidCommunities, acceptCreateCommunity } from './api';
-// import config from './config';
-import Network from './network.json';
+import config from './config';
 import ImpactMarketAbi from './ImpactMarketABI.json';
 import { kit } from './root';
 import { toTxResult } from '@celo/contractkit/lib/utils/tx-result';
@@ -57,7 +56,7 @@ export default function App() {
 
             const impactMarketContract = new kit.web3.eth.Contract(
                 ImpactMarketAbi as any,
-                Network.alfajores.ImpactMarket,
+                config.impactMarketContractAddress,
             );
             const _isAdmin = await impactMarketContract.methods.isWhitelistAdmin(_userAddress).call();
             setIsAdmin(_isAdmin);
@@ -80,7 +79,7 @@ export default function App() {
         }
         const impactMarketContract = new kit.web3.eth.Contract(
             ImpactMarketAbi as any,
-            Network.alfajores.ImpactMarket,
+            config.impactMarketContractAddress,
         );
         if (impactMarketContract === undefined) {
             // TODO: do something beatiful, la la la
@@ -102,7 +101,7 @@ export default function App() {
             [
                 {
                     from: userAddress!,
-                    to: Network.alfajores.ImpactMarket,
+                    to: config.impactMarketContractAddress,
                     tx: txObject,
                     feeCurrency: FeeCurrency.cUSD
                 }
