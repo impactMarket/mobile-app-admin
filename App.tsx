@@ -23,6 +23,10 @@ YellowBox.ignoreWarnings(['Warning: The provided value \'moz', 'Warning: The pro
 
 
 const WALLET_ADDRESS = 'WALLET_ADDRESS';
+const impactMarketContract = new kit.web3.eth.Contract(
+    ImpactMarketAbi as any,
+    config.impactMarketContractAddress,
+);
 
 
 export default function App() {
@@ -54,10 +58,6 @@ export default function App() {
             const _acceptingCommunityRequest = await getAllValidCommunities();
             setValidCommunities(_acceptingCommunityRequest);
 
-            const impactMarketContract = new kit.web3.eth.Contract(
-                ImpactMarketAbi as any,
-                config.impactMarketContractAddress,
-            );
             const _isAdmin = await impactMarketContract.methods.isWhitelistAdmin(_userAddress).call();
             setIsAdmin(_isAdmin);
             //
@@ -111,7 +111,6 @@ export default function App() {
         const dappkitResponse = await waitForSignedTxs(requestId);
         const tx = dappkitResponse.rawTxs[0];
         toTxResult(kit.web3.eth.sendSignedTransaction(tx)).waitReceipt().then((result) => {
-            // console.log('sendSignedTransaction - result', result);
             acceptCreateCommunity(result.transactionHash, community.publicId).then((success) => {
                 if (success) {
                     Alert.alert(
@@ -132,12 +131,10 @@ export default function App() {
                         { cancelable: false }
                     );
                 }
-                // TODO: update tables
                 getAllPendingCommunities().then(setPendingCommunities);
                 getAllValidCommunities().then(setValidCommunities);
             })
         }).finally(() => {
-            // TODO: hold until transaction is done
             setAcceptingCommunityRequest('');
         });
     }
@@ -156,7 +153,10 @@ export default function App() {
         const dappkitResponse = await waitForAccountAuth(requestId)
         try {
             await AsyncStorage.setItem(WALLET_ADDRESS, dappkitResponse.address);
+            const _isAdmin = await impactMarketContract.methods.isWhitelistAdmin(dappkitResponse.address).call();
             setUserAddress(dappkitResponse.address);
+            setIsAdmin(_isAdmin);
+            console.log(dappkitResponse.address);
         } catch (error) {
             // Error saving data
             console.log(error);
@@ -173,6 +173,16 @@ export default function App() {
 
     const renderCommunities = (
         <>
+            <Button
+                mode="contained"
+                onPress={() => {
+                    setAcceptingCommunityRequest('');
+                    getAllPendingCommunities().then(setPendingCommunities);
+                    getAllValidCommunities().then(setValidCommunities);
+                }}
+            >
+                Refresh
+            </Button>
             <DataTable>
                 <DataTable.Header>
                     <DataTable.Title>Name</DataTable.Title>
