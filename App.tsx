@@ -95,7 +95,7 @@ export default function App() {
         );
         const requestId = 'create_community';
         const dappName = 'Impact Market - Admin'
-        const callback = Linking.makeUrl('/my/path')
+        const callback = Linking.makeUrl('impactmarketappadmin://requesttx')
         requestTxSig(
             kit,
             [
@@ -142,7 +142,7 @@ export default function App() {
     const handleLoginWithCelo = async () => {
         const requestId = 'login'
         const dappName = 'Impact Market - Admin'
-        const callback = Linking.makeUrl('/my/path')
+        const callback = Linking.makeUrl('impactmarketappadmin://login')
 
         requestAccountAddress({
             requestId,
