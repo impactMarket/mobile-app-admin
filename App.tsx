@@ -58,7 +58,8 @@ export default function App() {
             const _acceptingCommunityRequest = await getAllValidCommunities();
             setValidCommunities(_acceptingCommunityRequest);
 
-            const _isAdmin = await impactMarketContract.methods.isWhitelistAdmin(_userAddress).call();
+            const _role = await impactMarketContract.methods.ADMIN_ROLE().call();
+            const _isAdmin = await impactMarketContract.methods.hasRole(_role, _userAddress).call();
             setIsAdmin(_isAdmin);
             //
             setLoaded(true);
@@ -153,7 +154,8 @@ export default function App() {
         const dappkitResponse = await waitForAccountAuth(requestId)
         try {
             await AsyncStorage.setItem(WALLET_ADDRESS, dappkitResponse.address);
-            const _isAdmin = await impactMarketContract.methods.isWhitelistAdmin(dappkitResponse.address).call();
+            const _role = await impactMarketContract.methods.ADMIN_ROLE().call();
+            const _isAdmin = await impactMarketContract.methods.hasRole(_role, dappkitResponse.address).call();
             setUserAddress(dappkitResponse.address);
             setIsAdmin(_isAdmin);
             console.log(dappkitResponse.address);
