@@ -9,7 +9,7 @@
       "android",
       "web"
     ],
-    "version": "0.0.1-alpha.7",
+    "version": "0.0.1-alpha.8",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "celodappkit",
@@ -26,12 +26,12 @@
     ],
     "ios": {
       "bundleIdentifier": "com.impactmarket.admin.mobile",
-      "buildNumber": "0.0.1a7",
+      "buildNumber": "0.0.1a8",
       "supportsTablet": true
     },
     "android": {
       "package": "com.impactmarket.admin.mobile",
-      "versionCode": 7
+      "versionCode": 8
     },
     "description": "ImpactMarket Admin",
     "githubUrl": "https://github.com/impactMarket/mobile-app-admin"
