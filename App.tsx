@@ -1,7 +1,7 @@
 import './global';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, AsyncStorage, YellowBox, Alert } from 'react-native';
-import { DataTable, Button, Paragraph } from 'react-native-paper';
+import { StyleSheet, View, AsyncStorage, YellowBox, Alert, SafeAreaView, ScrollView } from 'react-native';
+import { DataTable, Button, Paragraph, Appbar, Headline } from 'react-native-paper';
 // import { newKit, ContractKit } from '@celo/contractkit';
 import {
     requestAccountAddress,
@@ -17,6 +17,7 @@ import config from './config';
 import ImpactMarketAbi from './ImpactMarketABI.json';
 import { kit } from './root';
 import { toTxResult } from '@celo/contractkit/lib/utils/tx-result';
+import { Text } from 'react-native-paper';
 
 
 YellowBox.ignoreWarnings(['Warning: The provided value \'moz', 'Warning: The provided value \'ms-stream']);
@@ -185,6 +186,7 @@ export default function App() {
             >
                 Refresh
             </Button>
+            <Headline>Pending</Headline>
             <DataTable>
                 <DataTable.Header>
                     <DataTable.Title>Name</DataTable.Title>
@@ -212,6 +214,7 @@ export default function App() {
                     label="1-1 of 1"
                 />
             </DataTable>
+            <Headline>Accepted</Headline>
             <DataTable>
                 <DataTable.Header>
                     <DataTable.Title>Name</DataTable.Title>
@@ -239,21 +242,38 @@ export default function App() {
     );
 
     return (
-        <View style={styles.container}>
-            <Paragraph>{userAddress}</Paragraph>
-            {loading && <Paragraph>Loading...</Paragraph>}
-            {acceptingCommunityRequest.length > 0 && <Paragraph>Sending transaction...</Paragraph>}
-            <Paragraph>isAdmin: {isAdmin ? 'true' : 'false'}</Paragraph>
-            {isAdmin && renderCommunities}
+        <View>
+            <Appbar.Header>
+                <Appbar.Content title="Admin" />
+            </Appbar.Header>
+            <ScrollView style={styles.container}>
+                <Paragraph>
+                    <Text style={{ fontWeight: 'bold' }}>
+                        Your address:
+                    </Text> {userAddress.slice(0, 8)}...{userAddress.slice(36, 42)}
+                </Paragraph>
+                <Paragraph>
+                    <Text style={{ fontWeight: 'bold' }}>
+                        ImpactMarket address:
+                    </Text> {config.impactMarketContractAddress.slice(0, 8)}...{config.impactMarketContractAddress.slice(36, 42)}
+                </Paragraph>
+                <Paragraph>
+                    <Text style={{ fontWeight: 'bold' }}>
+                        isAdmin:
+                    </Text> {isAdmin ? 'true' : 'false'}
+                </Paragraph>
+                {loading && <Paragraph>Loading...</Paragraph>}
+                {acceptingCommunityRequest.length > 0 && <Paragraph>Sending transaction...</Paragraph>}
+                {isAdmin && renderCommunities}
+            </ScrollView>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
+        paddingHorizontal: 20,
+        marginTop: 20,
+        marginBottom: 80
+    }
 });
