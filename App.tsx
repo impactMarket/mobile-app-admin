@@ -202,7 +202,7 @@ export default function App() {
                         disabled={acceptingCommunityRequest === community.publicId}
                     >
                         <DataTable.Cell>{community.name}</DataTable.Cell>
-                        <DataTable.Cell>{community.location.title}</DataTable.Cell>
+                        <DataTable.Cell>{community.city}</DataTable.Cell>
                         <DataTable.Cell>{community.createdAt}</DataTable.Cell>
                         <DataTable.Cell>{community.contractAddress}</DataTable.Cell>
                     </DataTable.Row>)}
@@ -226,7 +226,7 @@ export default function App() {
                 {validCommunities.map((community) =>
                     <DataTable.Row key={community.publicId}>
                         <DataTable.Cell>{community.name}</DataTable.Cell>
-                        <DataTable.Cell>{community.location.title}</DataTable.Cell>
+                        <DataTable.Cell>{community.city}</DataTable.Cell>
                         <DataTable.Cell>{community.createdAt}</DataTable.Cell>
                         <DataTable.Cell>{community.contractAddress}</DataTable.Cell>
                     </DataTable.Row>)}
