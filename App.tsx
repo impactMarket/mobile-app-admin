@@ -90,10 +90,10 @@ export default function App() {
         // this.setState({ claiming: true });
         const txObject = await impactMarketContract.methods.addCommunity(
             community.requestByAddress,
-            community.txCreationObj.amountByClaim,
+            community.txCreationObj.claimAmount,
+            community.txCreationObj.maxClaim,
             community.txCreationObj.baseInterval,
             community.txCreationObj.incrementalInterval,
-            community.txCreationObj.claimHardcap,
         );
         const requestId = 'create_community';
         const dappName = 'Impact Market - Admin'
