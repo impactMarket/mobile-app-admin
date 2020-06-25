@@ -93,7 +93,7 @@ export default function App() {
             community.txCreationObj.claimAmount,
             community.txCreationObj.maxClaim,
             community.txCreationObj.baseInterval,
-            community.txCreationObj.incrementalInterval,
+            community.txCreationObj.incrementInterval,
         );
         const requestId = 'create_community';
         const dappName = 'Impact Market - Admin'
