@@ -5,7 +5,7 @@ const ENV = {
         /**
          * The default API URL
          */
-        baseApiUrl: 'http://192.168.1.109:5000/api',
+        baseApiUrl: 'http://192.168.1.102:5000/api',
 
         /**
          * JSON RPC url
@@ -15,7 +15,7 @@ const ENV = {
         /**
          * Contract Address to use in dev
          */
-        impactMarketContractAddress: '0xf67A23C86C95bF392bCdDd2e81f2aa6eDb257208',
+        impactMarketContractAddress: '0xa4288be05e4016acDb4Bd7138991DcdCe12C929C',
     },
     prod: {
         /**
@@ -31,7 +31,7 @@ const ENV = {
         /**
          * Contract Address to use in dev
          */
-        impactMarketContractAddress: '0x52Fb07781152fa57f8CeF1eAeF789e4B5400Ca97',
+        impactMarketContractAddress: '0xc57594675444BeC25f2863B8549c8e485dA290C1',
     }
 }
 
