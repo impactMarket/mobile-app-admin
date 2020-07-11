@@ -29,7 +29,7 @@ async function acceptCreateCommunity(
     } finally {
         // always executed
     }
-    return response === 200 ? true : false;
+    return response === 202 ? true : false;
 }
 
 async function getAllValidCommunities(): Promise<ICommunity[]> {
