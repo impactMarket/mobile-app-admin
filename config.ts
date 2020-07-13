@@ -21,7 +21,7 @@ const ENV = {
         /**
          * The default API URL
          */
-        baseApiUrl: 'https://impactmarket-poc-api.herokuapp.com/api',
+        baseApiUrl: 'https://impactmarket-api-prod.herokuapp.com/api',
 
         /**
          * JSON RPC url
@@ -31,7 +31,7 @@ const ENV = {
         /**
          * Contract Address to use in dev
          */
-        impactMarketContractAddress: '0xc57594675444BeC25f2863B8549c8e485dA290C1',
+        impactMarketContractAddress: '0xc70cC218AE84cfDb0De11783082c49E3702092fb',
     }
 }
 
