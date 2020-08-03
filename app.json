@@ -1,39 +1,38 @@
 {
-  "expo": {
-    "name": "impactMarket-admin",
-    "slug": "impactMarket-admin",
-    "privacy": "public",
-    "sdkVersion": "36.0.0",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
-    "version": "0.0.1-alpha.11",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "scheme": "celodappkit",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "bundleIdentifier": "com.impactmarket.admin.mobile",
-      "buildNumber": "0.0.1a11",
-      "supportsTablet": true
-    },
-    "android": {
-      "package": "com.impactmarket.admin.mobile",
-      "versionCode": 11
-    },
-    "description": "ImpactMarket Admin",
-    "githubUrl": "https://github.com/impactMarket/mobile-app-admin"
-  }
+    "expo": {
+        "name": "impactMarketAdmin",
+        "slug": "impact-market-admin",
+        "privacy": "public",
+        "sdkVersion": "36.0.0",
+        "platforms": [
+            "ios",
+            "android",
+            "web"
+        ],
+        "version": "0.0.1-alpha.11",
+        "orientation": "portrait",
+        "icon": "./assets/icon.png",
+        "scheme": "impactmarketmobileadmin",
+        "splash": {
+            "image": "./assets/splash.png",
+            "resizeMode": "contain",
+            "backgroundColor": "#ffffff"
+        },
+        "updates": {
+            "fallbackToCacheTimeout": 0
+        },
+        "assetBundlePatterns": [
+            "**/*"
+        ],
+        "ios": {
+            "bundleIdentifier": "com.impactmarket.admin.mobile",
+            "buildNumber": "0.0.1a11"
+        },
+        "android": {
+            "package": "com.impactmarket.admin.mobile",
+            "versionCode": 11
+        },
+        "description": "ImpactMarket Admin",
+        "githubUrl": "https://github.com/impactMarket/mobile-app-admin"
+    }
 }

@@ -1,11 +1,22 @@
 import Constants from 'expo-constants';
 
+const commonConfig = {
+    /**
+     * Block explorer base URL. Contract address is added at the end.
+     */
+    blockExplorer: 'https://alfajores-blockscout.celo-testnet.org/address/',
+
+    /**
+     * cUSD decimals to use in ui format
+     */
+    cUSDDecimals: 18
+}
 const ENV = {
     dev: {
         /**
          * The default API URL
          */
-        baseApiUrl: 'http://192.168.1.110:5000/api',
+        baseApiUrl: process.env.EXPO_API_BASE_URL + '/api',
 
         /**
          * JSON RPC url
@@ -15,13 +26,29 @@ const ENV = {
         /**
          * Contract Address to use in dev
          */
-        impactMarketContractAddress: '0xa4288be05e4016acDb4Bd7138991DcdCe12C929C',
+        impactMarketContractAddress: process.env.EXPO_DEV_IMPACT_MARKET_CONTRACT!,
     },
-    prod: {
+    staging: {
         /**
          * The default API URL
          */
-        baseApiUrl: 'https://impactmarket-api-prod.herokuapp.com/api',
+        baseApiUrl: 'https://impactmarket-api-staging.herokuapp.com/api',
+
+        /**
+         * JSON RPC url
+         */
+        jsonRpc: 'https://alfajores-forno.celo-testnet.org',
+
+        /**
+         * Contract Address to use in dev
+         */
+        impactMarketContractAddress: '0xc57594675444BeC25f2863B8549c8e485dA290C1',
+    },
+    production: {
+        /**
+         * The default API URL
+         */
+        baseApiUrl: 'https://impactmarket-api-production.herokuapp.com/api',
 
         /**
          * JSON RPC url
@@ -36,12 +63,13 @@ const ENV = {
 }
 
 function getEnvVars() {
-    if (Constants.manifest.packagerOpts !== undefined) {
-        if (Constants.manifest.packagerOpts.dev !== undefined) {
-            return Constants.manifest.packagerOpts.dev ? ENV.dev: ENV.prod;
-        }
-    }
-    return ENV.prod;
+    const { releaseChannel } = Constants.manifest;
+
+    if (releaseChannel === undefined) return { ...commonConfig, ...ENV.dev };
+    if (releaseChannel.indexOf('production') !== -1) return { ...commonConfig, ...ENV.production };
+    if (releaseChannel.indexOf('staging') !== -1) return { ...commonConfig, ...ENV.staging };
+
+    return { ...commonConfig, ...ENV.dev };
 }
 
 export default getEnvVars()
