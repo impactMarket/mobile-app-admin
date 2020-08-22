@@ -166,14 +166,6 @@ export default function App() {
         }
     }
 
-    if (userAddress === null) {
-        return <View style={styles.container}>
-            <Button mode="contained" onPress={handleLoginWithCelo}>
-                Login
-            </Button>
-        </View>
-    }
-
     const renderCommunities = (
         <>
             <Button
@@ -191,7 +183,6 @@ export default function App() {
                 <DataTable.Header>
                     <DataTable.Title>Name</DataTable.Title>
                     <DataTable.Title>Location</DataTable.Title>
-                    <DataTable.Title>Created</DataTable.Title>
                     <DataTable.Title>By</DataTable.Title>
                 </DataTable.Header>
 
@@ -203,8 +194,7 @@ export default function App() {
                     >
                         <DataTable.Cell>{community.name}</DataTable.Cell>
                         <DataTable.Cell>{community.city}</DataTable.Cell>
-                        <DataTable.Cell>{community.createdAt}</DataTable.Cell>
-                        <DataTable.Cell>{community.contractAddress}</DataTable.Cell>
+                        <DataTable.Cell>{community.requestByAddress}</DataTable.Cell>
                     </DataTable.Row>)}
 
                 <DataTable.Pagination
@@ -219,7 +209,6 @@ export default function App() {
                 <DataTable.Header>
                     <DataTable.Title>Name</DataTable.Title>
                     <DataTable.Title>Location</DataTable.Title>
-                    <DataTable.Title>Created</DataTable.Title>
                     <DataTable.Title>By</DataTable.Title>
                 </DataTable.Header>
 
@@ -227,8 +216,7 @@ export default function App() {
                     <DataTable.Row key={community.publicId}>
                         <DataTable.Cell>{community.name}</DataTable.Cell>
                         <DataTable.Cell>{community.city}</DataTable.Cell>
-                        <DataTable.Cell>{community.createdAt}</DataTable.Cell>
-                        <DataTable.Cell>{community.contractAddress}</DataTable.Cell>
+                        <DataTable.Cell>{community.requestByAddress}</DataTable.Cell>
                     </DataTable.Row>)}
 
                 <DataTable.Pagination
@@ -240,6 +228,17 @@ export default function App() {
             </DataTable>
         </>
     );
+
+    if (userAddress === null) {
+        return <View>
+            <Appbar.Header>
+                <Appbar.Content title="Admin" />
+            </Appbar.Header>
+            <Button mode="contained" onPress={handleLoginWithCelo}>
+                Login
+            </Button>
+        </View>
+    }
 
     return (
         <View>
