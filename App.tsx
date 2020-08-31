@@ -18,9 +18,22 @@ import ImpactMarketAbi from './ImpactMarketABI.json';
 import { kit } from './root';
 import { toTxResult } from '@celo/contractkit/lib/utils/tx-result';
 import { Text } from 'react-native-paper';
+import { NavigationContainer, DefaultTheme as NavigationDefaultTheme } from '@react-navigation/native';
 
 
-YellowBox.ignoreWarnings(['Warning: The provided value \'moz', 'Warning: The provided value \'ms-stream']);
+YellowBox.ignoreWarnings([
+    'The provided value \'moz-chunked-arraybuffer\' is not a valid \'responseType\'.',
+    'The provided value \'ms-stream\' is not a valid \'responseType\'.'
+]);
+
+const navigationTheme = {
+    ...NavigationDefaultTheme,
+    colors: {
+        ...NavigationDefaultTheme.colors,
+        primary: '#5e72e4',
+        background: '#ffffff',
+    },
+};
 
 
 const WALLET_ADDRESS = 'WALLET_ADDRESS';
@@ -241,31 +254,33 @@ export default function App() {
     }
 
     return (
-        <View>
-            <Appbar.Header>
-                <Appbar.Content title="Admin" />
-            </Appbar.Header>
-            <ScrollView style={styles.container}>
-                <Paragraph>
-                    <Text style={{ fontWeight: 'bold' }}>
-                        Your address:
-                    </Text> {userAddress.slice(0, 8)}...{userAddress.slice(36, 42)}
-                </Paragraph>
-                <Paragraph>
-                    <Text style={{ fontWeight: 'bold' }}>
-                        ImpactMarket address:
-                    </Text> {config.impactMarketContractAddress.slice(0, 8)}...{config.impactMarketContractAddress.slice(36, 42)}
-                </Paragraph>
-                <Paragraph>
-                    <Text style={{ fontWeight: 'bold' }}>
-                        isAdmin:
-                    </Text> {isAdmin ? 'true' : 'false'}
-                </Paragraph>
-                {loading && <Paragraph>Loading...</Paragraph>}
-                {acceptingCommunityRequest.length > 0 && <Paragraph>Sending transaction...</Paragraph>}
-                {isAdmin && renderCommunities}
-            </ScrollView>
-        </View>
+        <NavigationContainer theme={navigationTheme}>
+            <View>
+                <Appbar.Header>
+                    <Appbar.Content title="Admin" />
+                </Appbar.Header>
+                <ScrollView style={styles.container}>
+                    <Paragraph>
+                        <Text style={{ fontWeight: 'bold' }}>
+                            Your address:
+                        </Text> {userAddress.slice(0, 8)}...{userAddress.slice(36, 42)}
+                    </Paragraph>
+                    <Paragraph>
+                        <Text style={{ fontWeight: 'bold' }}>
+                            ImpactMarket address:
+                        </Text> {config.impactMarketContractAddress.slice(0, 8)}...{config.impactMarketContractAddress.slice(36, 42)}
+                    </Paragraph>
+                    <Paragraph>
+                        <Text style={{ fontWeight: 'bold' }}>
+                            isAdmin:
+                        </Text> {isAdmin ? 'true' : 'false'}
+                    </Paragraph>
+                    {loading && <Paragraph>Loading...</Paragraph>}
+                    {acceptingCommunityRequest.length > 0 && <Paragraph>Sending transaction...</Paragraph>}
+                    {isAdmin && renderCommunities}
+                </ScrollView>
+            </View>
+        </NavigationContainer>
     );
 }
 
