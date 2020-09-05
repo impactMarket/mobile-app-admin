@@ -2,17 +2,17 @@ import Constants from 'expo-constants';
 
 const commonConfig = {
     /**
-     * Block explorer base URL. Contract address is added at the end.
-     */
-    blockExplorer: 'https://alfajores-blockscout.celo-testnet.org/address/',
-
-    /**
      * cUSD decimals to use in ui format
      */
-    cUSDDecimals: 18
-}
+    cUSDDecimals: 18,
+};
 const ENV = {
     dev: {
+        /**
+         * Block explorer base URL. Contract address is added at the end.
+         */
+        blockExplorer: 'https://alfajores-blockscout.celo-testnet.org/address/',
+
         /**
          * The default API URL
          */
@@ -26,9 +26,20 @@ const ENV = {
         /**
          * Contract Address to use in dev
          */
-        impactMarketContractAddress: process.env.EXPO_DEV_IMPACT_MARKET_CONTRACT!,
+        impactMarketContractAddress: process.env
+            .EXPO_DEV_IMPACT_MARKET_CONTRACT!,
+
+        /**
+         * Is it in testnet?
+         */
+        testnet: true,
     },
     staging: {
+        /**
+         * Block explorer base URL. Contract address is added at the end.
+         */
+        blockExplorer: 'https://alfajores-blockscout.celo-testnet.org/address/',
+
         /**
          * The default API URL
          */
@@ -42,9 +53,20 @@ const ENV = {
         /**
          * Contract Address to use in dev
          */
-        impactMarketContractAddress: '0x4ebE844858c756498902B6517b20d50e28F8Dd62',
+        impactMarketContractAddress:
+            '0x4ebE844858c756498902B6517b20d50e28F8Dd62',
+
+        /**
+         * Is it in testnet?
+         */
+        testnet: true,
     },
     production: {
+        /**
+         * Block explorer base URL. Contract address is added at the end.
+         */
+        blockExplorer: 'https://explorer.celo.org/address/',
+
         /**
          * The default API URL
          */
@@ -53,23 +75,33 @@ const ENV = {
         /**
          * JSON RPC url
          */
-        jsonRpc: 'https://alfajores-forno.celo-testnet.org',
+        jsonRpc: 'https://rc1-forno.celo-testnet.org',
 
         /**
          * Contract Address to use in dev
          */
-        impactMarketContractAddress: '0xa7C3103EC5eE8188A7D20E70d5398F727DBb5A1A',
-    }
-}
+        impactMarketContractAddress:
+            '0x37c61A17139a5aC55fB2ce2FB28edA017403eb8c',
+
+        /**
+         * Is it in testnet?
+         */
+        testnet: false,
+    },
+};
 
 function getEnvVars() {
-    if (Constants.manifest.packagerOpts?.dev) return { ...commonConfig, ...ENV.dev };
-    else if (Constants.appOwnership === 'standalone') return { ...commonConfig, ...ENV.production };
-    else if (Constants.appOwnership === 'expo') {
-        if (Constants.manifest.releaseChannel?.indexOf('production') !== -1) return { ...commonConfig, ...ENV.production };
+    if (Constants.manifest.packagerOpts?.dev) {
+        return { ...commonConfig, ...ENV.dev };
+    } else if (Constants.appOwnership === 'standalone') {
+        return { ...commonConfig, ...ENV.production };
+    } else if (Constants.appOwnership === 'expo') {
+        if (Constants.manifest.releaseChannel?.indexOf('production') !== -1) {
+            return { ...commonConfig, ...ENV.production };
+        }
         return { ...commonConfig, ...ENV.staging };
     }
     return { ...commonConfig, ...ENV.dev };
 }
 
-export default getEnvVars()
+export default getEnvVars();
