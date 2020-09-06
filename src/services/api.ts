@@ -1,6 +1,6 @@
 import axios from 'axios';
-import config from './config';
-import { ICommunity } from './types';
+import config from '../../config';
+import { ICommunity } from '../../types';
 
 
 axios.defaults.baseURL = config.baseApiUrl;
