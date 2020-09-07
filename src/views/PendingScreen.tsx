@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-    StyleSheet,
     AsyncStorage,
     Alert,
 } from "react-native";
@@ -16,7 +15,6 @@ import { Linking } from "expo";
 import { ICommunity } from "../../types";
 import {
     getAllPendingCommunities,
-    getAllValidCommunities,
     acceptCreateCommunity,
 } from "../services/api";
 import config from "../../config";
@@ -26,10 +24,6 @@ import { toTxResult } from "@celo/contractkit/lib/utils/tx-result";
 
 
 const WALLET_ADDRESS = "WALLET_ADDRESS";
-const impactMarketContract = new kit.web3.eth.Contract(
-    ImpactMarketAbi as any,
-    config.impactMarketContractAddress
-);
 
 export default function PendingScreen() {
     const [pendingCommunities, setPendingCommunities] = useState<ICommunity[]>(
@@ -71,7 +65,6 @@ export default function PendingScreen() {
             // TODO: do something beatiful, la la la
             return;
         }
-        // this.setState({ claiming: true });
         const txObject = await impactMarketContract.methods.addCommunity(
             community.requestByAddress,
             community.txCreationObj.claimAmount,
@@ -79,9 +72,9 @@ export default function PendingScreen() {
             community.txCreationObj.baseInterval,
             community.txCreationObj.incrementInterval
         );
-        const requestId = "create_community";
+        const requestId = "createcommunity";
         const dappName = "impactMarket - Admin";
-        const callback = Linking.makeUrl("impactmarketappadmin://requesttx");
+        const callback = Linking.makeUrl("impactmarketappadmin://createcommunity");
         requestTxSig(
             kit,
             [
@@ -117,7 +110,6 @@ export default function PendingScreen() {
                             );
                         }
                         getAllPendingCommunities().then(setPendingCommunities);
-                        // getAllValidCommunities().then(setValidCommunities);
                     }
                 );
             })
