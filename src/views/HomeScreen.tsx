@@ -15,6 +15,9 @@ import config from "../../config";
 import ImpactMarketAbi from "../contracts/ImpactMarketABI.json";
 import { kit } from "../../root";
 import { useNavigation } from "@react-navigation/native";
+import { requestTxSig, FeeCurrency, waitForSignedTxs } from "@celo/dappkit";
+import { toTxResult } from "@celo/contractkit/lib/utils/tx-result";
+import { Linking } from "expo";
 
 
 const WALLET_ADDRESS = "WALLET_ADDRESS";
@@ -47,6 +50,36 @@ export default function HomeScreen() {
         };
         loadCommunities();
     }, []);
+
+    const handleMigrateCommunity = async () => {
+        const txObject = await impactMarketContract.methods.migrateCommunity(
+            '0x833961aab38d24EECdCD2129Aa5a5d41Fd86Acbf',
+            '0x8978Da2906022A57D9254002CeF4Af1640c902E5',
+            '0x975328E7102a654db29e4E3E077b3eCb4520bF79'
+        );
+        const requestId = "migratecommunity";
+        const dappName = "impactMarket - Admin";
+        const callback = Linking.makeUrl("impactmarketappadmin://migratecommunity");
+        requestTxSig(
+            kit,
+            [
+                {
+                    from: userAddress!,
+                    to: config.impactMarketContractAddress,
+                    tx: txObject,
+                    feeCurrency: FeeCurrency.cUSD,
+                },
+            ],
+            { requestId, dappName, callback }
+        );
+        const dappkitResponse = await waitForSignedTxs(requestId);
+        const tx = dappkitResponse.rawTxs[0];
+        toTxResult(kit.web3.eth.sendSignedTransaction(tx))
+            .waitReceipt()
+            .then((result) => {
+                console.log(result);
+            });
+    }
 
     if (userAddress === null) {
         return <View />;
@@ -94,6 +127,12 @@ export default function HomeScreen() {
                         navigation.navigate('Accepted')
                     }
                 >Go to Accepted</Button>
+                <Button
+                    mode="contained"
+                    style={{ marginVertical: 10 }}
+                    onPress={handleMigrateCommunity}
+                    disabled={true}
+                >Migrate Community</Button>
             </View>
         </View>
     );

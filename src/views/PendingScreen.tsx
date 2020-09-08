@@ -131,7 +131,7 @@ export default function PendingScreen() {
                 <DataTable.Row
                     key={community.publicId}
                     onPress={() => handleAcceptCommunity(community) as any}
-                    disabled={acceptingCommunityRequest === community.publicId}
+                    // disabled={acceptingCommunityRequest === community.publicId}
                 >
                     <DataTable.Cell>{community.name}</DataTable.Cell>
                     <DataTable.Cell>{community.city}</DataTable.Cell>
