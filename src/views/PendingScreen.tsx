@@ -74,7 +74,7 @@ export default function PendingScreen() {
         );
         const requestId = "createcommunity";
         const dappName = "impactMarket - Admin";
-        const callback = Linking.makeUrl("impactmarketappadmin://createcommunity");
+        const callback = Linking.makeUrl("createcommunity/");
         requestTxSig(
             kit,
             [
