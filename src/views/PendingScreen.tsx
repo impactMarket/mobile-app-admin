@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import {
     AsyncStorage,
-    Alert,
+    Alert
 } from "react-native";
 import {
-    DataTable,
+    List, Portal, Text, Button, Modal, Paragraph, Card
 } from "react-native-paper";
 import {
     requestTxSig,
@@ -21,17 +21,14 @@ import config from "../../config";
 import ImpactMarketAbi from "../contracts/ImpactMarketABI.json";
 import { kit } from "../../root";
 import { toTxResult } from "@celo/contractkit/lib/utils/tx-result";
+import { ScrollView } from "react-native-gesture-handler";
 
 
 const WALLET_ADDRESS = "WALLET_ADDRESS";
 
 export default function PendingScreen() {
-    const [pendingCommunities, setPendingCommunities] = useState<ICommunity[]>(
-        []
-    );
-    const [acceptingCommunityRequest, setAcceptingCommunityRequest] = useState<
-        string
-    >("");
+    const [pendingCommunities, setPendingCommunities] = useState<ICommunity[]>([]);
+    const [acceptingCommunity, setAcceptingCommunity] = useState<ICommunity>();
     const [userAddress, setUserAddress] = useState<string | null>(null);
 
     useEffect(() => {
@@ -51,8 +48,6 @@ export default function PendingScreen() {
     }, []);
 
     const handleAcceptCommunity = async (community: ICommunity) => {
-        setAcceptingCommunityRequest(community.publicId);
-
         if (kit === undefined) {
             // TODO: do something beatiful, la la la
             return;
@@ -114,39 +109,49 @@ export default function PendingScreen() {
                 );
             })
             .finally(() => {
-                setAcceptingCommunityRequest("");
+                //
             });
     };
 
-
     return (
-        <DataTable>
-            <DataTable.Header>
-                <DataTable.Title>Name</DataTable.Title>
-                <DataTable.Title>Location</DataTable.Title>
-                <DataTable.Title>By</DataTable.Title>
-            </DataTable.Header>
+        <>
+            <ScrollView>
+                {pendingCommunities.map((community) => (
+                    <List.Item
+                        title={community.name}
+                        key={community.publicId}
+                        description={`by ${community.requestByAddress}`}
+                        onPress={() => setAcceptingCommunity(community)}
+                    />
+                ))}
+            </ScrollView>
+            <Portal>
+                <Modal visible={acceptingCommunity !== undefined} onDismiss={() => setAcceptingCommunity(undefined)}>
+                    <ScrollView>
 
-            {pendingCommunities.map((community) => (
-                <DataTable.Row
-                    key={community.publicId}
-                    onPress={() => handleAcceptCommunity(community) as any}
-                    // disabled={acceptingCommunityRequest === community.publicId}
-                >
-                    <DataTable.Cell>{community.name}</DataTable.Cell>
-                    <DataTable.Cell>{community.city}</DataTable.Cell>
-                    <DataTable.Cell>{community.requestByAddress}</DataTable.Cell>
-                </DataTable.Row>
-            ))}
-
-            <DataTable.Pagination
-                page={1}
-                numberOfPages={1}
-                onPageChange={(page) => {
-                    console.log(page);
-                }}
-                label="1-1 of 1"
-            />
-        </DataTable>
+                        <Card style={{ marginHorizontal: 10 }}>
+                            <Card.Cover source={{ uri: acceptingCommunity?.coverImage }} />
+                            <Card.Content>
+                                <Paragraph><Text style={{ fontWeight: "bold" }}>requestByAddress:</Text>{acceptingCommunity?.requestByAddress}</Paragraph>
+                                <Paragraph><Text style={{ fontWeight: "bold" }}>name:</Text>{acceptingCommunity?.name}</Paragraph>
+                                <Paragraph><Text style={{ fontWeight: "bold" }}>description:</Text>Lorem {acceptingCommunity?.description}.</Paragraph>
+                                <Paragraph><Text style={{ fontWeight: "bold" }}>city:</Text>{acceptingCommunity?.city}</Paragraph>
+                                <Paragraph><Text style={{ fontWeight: "bold" }}>country:</Text>{acceptingCommunity?.country}</Paragraph>
+                                <Paragraph><Text style={{ fontWeight: "bold" }}>email:</Text>{acceptingCommunity?.email}</Paragraph>
+                                <Paragraph><Text style={{ fontWeight: "bold" }}>txCreationObj:</Text>{JSON.stringify(acceptingCommunity?.txCreationObj)}</Paragraph>
+                            </Card.Content>
+                            <Card.Actions>
+                                <Button mode="contained" style={{ marginRight: 20 }} onPress={() => handleAcceptCommunity(acceptingCommunity!)}>
+                                    Accept
+                            </Button>
+                                <Button mode="contained" onPress={() => setAcceptingCommunity(undefined)}>
+                                    Cancel
+                            </Button>
+                            </Card.Actions>
+                        </Card>
+                    </ScrollView>
+                </Modal>
+            </Portal>
+        </>
     );
 }
