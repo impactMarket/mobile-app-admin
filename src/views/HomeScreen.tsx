@@ -17,7 +17,8 @@ import { kit } from "../../root";
 import { useNavigation } from "@react-navigation/native";
 import { requestTxSig, FeeCurrency, waitForSignedTxs } from "@celo/dappkit";
 import { toTxResult } from "@celo/contractkit/lib/utils/tx-result";
-import { Linking } from "expo";
+import * as Linking from "expo-linking";
+import Constants from "expo-constants";
 
 
 const WALLET_ADDRESS = "WALLET_ADDRESS";
@@ -134,6 +135,9 @@ export default function HomeScreen() {
                     disabled={true}
                 >Migrate Community</Button>
             </View>
+            <Paragraph>
+                Build: {Constants.manifest.version}
+            </Paragraph>
         </View>
     );
 }
