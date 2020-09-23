@@ -134,7 +134,7 @@ export default function PendingScreen() {
                             <Card.Content>
                                 <Paragraph><Text style={{ fontWeight: "bold" }}>requestByAddress:</Text>{acceptingCommunity?.requestByAddress}</Paragraph>
                                 <Paragraph><Text style={{ fontWeight: "bold" }}>name:</Text>{acceptingCommunity?.name}</Paragraph>
-                                <Paragraph><Text style={{ fontWeight: "bold" }}>description:</Text>Lorem {acceptingCommunity?.description}.</Paragraph>
+                                <Paragraph><Text style={{ fontWeight: "bold" }}>description:</Text>{acceptingCommunity?.description}.</Paragraph>
                                 <Paragraph><Text style={{ fontWeight: "bold" }}>city:</Text>{acceptingCommunity?.city}</Paragraph>
                                 <Paragraph><Text style={{ fontWeight: "bold" }}>country:</Text>{acceptingCommunity?.country}</Paragraph>
                                 <Paragraph><Text style={{ fontWeight: "bold" }}>email:</Text>{acceptingCommunity?.email}</Paragraph>
