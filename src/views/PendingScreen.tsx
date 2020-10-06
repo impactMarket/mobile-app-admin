@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
     AsyncStorage,
-    Alert
+    Alert, View
 } from "react-native";
 import {
     List, Portal, Text, Button, Modal, Paragraph, Card
@@ -22,6 +22,7 @@ import ImpactMarketAbi from "../contracts/ImpactMarketABI.json";
 import { kit } from "../../root";
 import { toTxResult } from "@celo/contractkit/lib/utils/tx-result";
 import { ScrollView } from "react-native-gesture-handler";
+import BigNumber from "bignumber.js";
 
 
 const WALLET_ADDRESS = "WALLET_ADDRESS";
@@ -113,6 +114,19 @@ export default function PendingScreen() {
             });
     };
 
+    const bnToStringValue = (value : BigNumber) => new BigNumber(value).dividedBy(10 ** config.cUSDDecimals).decimalPlaces(2, 1).toString()
+    const bnToStringTime = (value : BigNumber, div: number) => new BigNumber(value).dividedBy(div).toString()
+
+    const txObject = (
+        <View>
+            <Paragraph><Text style={{ fontWeight: "bold" }}>txCreationObj:</Text></Paragraph>
+            <Paragraph><Text style={{ fontWeight: "bold" }}> - claimAmount:</Text> {bnToStringValue(acceptingCommunity?.txCreationObj.claimAmount)} cUSD</Paragraph>
+            <Paragraph><Text style={{ fontWeight: "bold" }}> - maxClaim:</Text> {bnToStringValue(acceptingCommunity?.txCreationObj.maxClaim)} cUSD</Paragraph>
+            <Paragraph><Text style={{ fontWeight: "bold" }}> - baseInterval:</Text> {bnToStringTime(acceptingCommunity?.txCreationObj.baseInterval, 3600)}h</Paragraph>
+            <Paragraph><Text style={{ fontWeight: "bold" }}> - incrementInterval:</Text> {bnToStringTime(acceptingCommunity?.txCreationObj.incrementInterval, 60)}m</Paragraph>
+        </View>
+    )
+
     return (
         <>
             <ScrollView>
@@ -132,13 +146,13 @@ export default function PendingScreen() {
                         <Card style={{ marginHorizontal: 10 }}>
                             <Card.Cover source={{ uri: acceptingCommunity?.coverImage }} />
                             <Card.Content>
-                                <Paragraph><Text style={{ fontWeight: "bold" }}>requestByAddress:</Text>{acceptingCommunity?.requestByAddress}</Paragraph>
-                                <Paragraph><Text style={{ fontWeight: "bold" }}>name:</Text>{acceptingCommunity?.name}</Paragraph>
-                                <Paragraph><Text style={{ fontWeight: "bold" }}>description:</Text>{acceptingCommunity?.description}.</Paragraph>
-                                <Paragraph><Text style={{ fontWeight: "bold" }}>city:</Text>{acceptingCommunity?.city}</Paragraph>
-                                <Paragraph><Text style={{ fontWeight: "bold" }}>country:</Text>{acceptingCommunity?.country}</Paragraph>
-                                <Paragraph><Text style={{ fontWeight: "bold" }}>email:</Text>{acceptingCommunity?.email}</Paragraph>
-                                <Paragraph><Text style={{ fontWeight: "bold" }}>txCreationObj:</Text>{JSON.stringify(acceptingCommunity?.txCreationObj)}</Paragraph>
+                                <Paragraph><Text style={{ fontWeight: "bold" }}>requestByAddress:</Text> {acceptingCommunity?.requestByAddress}</Paragraph>
+                                <Paragraph><Text style={{ fontWeight: "bold" }}>name:</Text> {acceptingCommunity?.name}</Paragraph>
+                                <Paragraph><Text style={{ fontWeight: "bold" }}>description:</Text> {acceptingCommunity?.description}.</Paragraph>
+                                <Paragraph><Text style={{ fontWeight: "bold" }}>city:</Text> {acceptingCommunity?.city}</Paragraph>
+                                <Paragraph><Text style={{ fontWeight: "bold" }}>country:</Text> {acceptingCommunity?.country}</Paragraph>
+                                <Paragraph><Text style={{ fontWeight: "bold" }}>email:</Text> {acceptingCommunity?.email}</Paragraph>
+                                {txObject}
                             </Card.Content>
                             <Card.Actions>
                                 <Button mode="contained" style={{ marginRight: 20 }} onPress={() => handleAcceptCommunity(acceptingCommunity!)}>
