@@ -60,7 +60,7 @@ export default function HomeScreen() {
         );
         const requestId = "migratecommunity";
         const dappName = "impactMarket - Admin";
-        const callback = Linking.makeUrl("impactmarketappadmin://migratecommunity");
+        const callback = Linking.makeUrl();
         requestTxSig(
             kit,
             [

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import config from '../../config';
-import { ICommunity } from '../../types';
+import { ICommunityInfo } from '../../types';
 
 
 axios.defaults.baseURL = config.baseApiUrl;
@@ -32,8 +32,8 @@ async function acceptCreateCommunity(
     return response === 202 ? true : false;
 }
 
-async function getAllValidCommunities(): Promise<ICommunity[]> {
-    let response = [] as ICommunity[];
+async function getAllValidCommunities(): Promise<ICommunityInfo[]> {
+    let response = [] as ICommunityInfo[];
     try {
         // handle success
         const result = await axios.get('/community/all/valid')
@@ -46,8 +46,8 @@ async function getAllValidCommunities(): Promise<ICommunity[]> {
     return response;
 }
 
-async function getAllPendingCommunities(): Promise<ICommunity[]> {
-    let response = [] as ICommunity[];
+async function getAllPendingCommunities(): Promise<ICommunityInfo[]> {
+    let response = [] as ICommunityInfo[];
     try {
         // handle success
         const result = await axios.get('/community/all/pending')

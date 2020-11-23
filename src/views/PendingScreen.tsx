@@ -12,7 +12,7 @@ import {
     waitForSignedTxs,
 } from "@celo/dappkit";
 import { Linking } from "expo";
-import { ICommunity } from "../../types";
+import { ICommunityInfo } from "../../types";
 import {
     getAllPendingCommunities,
     acceptCreateCommunity,
@@ -28,8 +28,8 @@ import BigNumber from "bignumber.js";
 const WALLET_ADDRESS = "WALLET_ADDRESS";
 
 export default function PendingScreen() {
-    const [pendingCommunities, setPendingCommunities] = useState<ICommunity[]>([]);
-    const [acceptingCommunity, setAcceptingCommunity] = useState<ICommunity>();
+    const [pendingCommunities, setPendingCommunities] = useState<ICommunityInfo[]>([]);
+    const [acceptingCommunity, setAcceptingCommunity] = useState<ICommunityInfo>();
     const [userAddress, setUserAddress] = useState<string | null>(null);
 
     useEffect(() => {
@@ -48,7 +48,7 @@ export default function PendingScreen() {
         loadCommunities();
     }, []);
 
-    const handleAcceptCommunity = async (community: ICommunity) => {
+    const handleAcceptCommunity = async (community: ICommunityInfo) => {
         if (kit === undefined) {
             // TODO: do something beatiful, la la la
             return;
@@ -63,14 +63,14 @@ export default function PendingScreen() {
         }
         const txObject = await impactMarketContract.methods.addCommunity(
             community.requestByAddress,
-            community.txCreationObj.claimAmount,
-            community.txCreationObj.maxClaim,
-            community.txCreationObj.baseInterval,
-            community.txCreationObj.incrementInterval
+            community.contractParams.claimAmount,
+            community.contractParams.maxClaim,
+            community.contractParams.baseInterval,
+            community.contractParams.incrementInterval
         );
         const requestId = "createcommunity";
         const dappName = "impactMarket - Admin";
-        const callback = Linking.makeUrl("createcommunity/");
+        const callback = Linking.makeUrl();
         requestTxSig(
             kit,
             [
@@ -114,18 +114,18 @@ export default function PendingScreen() {
             });
     };
 
-    const bnToStringValue = (value : BigNumber) => new BigNumber(value).dividedBy(10 ** config.cUSDDecimals).decimalPlaces(2, 1).toString()
-    const bnToStringTime = (value : BigNumber, div: number) => new BigNumber(value).dividedBy(div).toString()
+    const bnToStringValue = (value: string) => new BigNumber(value).dividedBy(10 ** config.cUSDDecimals).decimalPlaces(2, 1).toString()
+    // const bnToStringTime = (value: BigNumber, div: number) => new BigNumber(value).dividedBy(div).toString()
 
-    const txObject = (
+    const txObject = acceptingCommunity !== undefined ? (
         <View>
             <Paragraph><Text style={{ fontWeight: "bold" }}>txCreationObj:</Text></Paragraph>
-            <Paragraph><Text style={{ fontWeight: "bold" }}> - claimAmount:</Text> {bnToStringValue(acceptingCommunity?.txCreationObj.claimAmount)} cUSD</Paragraph>
-            <Paragraph><Text style={{ fontWeight: "bold" }}> - maxClaim:</Text> {bnToStringValue(acceptingCommunity?.txCreationObj.maxClaim)} cUSD</Paragraph>
-            <Paragraph><Text style={{ fontWeight: "bold" }}> - baseInterval:</Text> {bnToStringTime(acceptingCommunity?.txCreationObj.baseInterval, 3600)}h</Paragraph>
-            <Paragraph><Text style={{ fontWeight: "bold" }}> - incrementInterval:</Text> {bnToStringTime(acceptingCommunity?.txCreationObj.incrementInterval, 60)}m</Paragraph>
+            <Paragraph><Text style={{ fontWeight: "bold" }}> - claimAmount:</Text> {bnToStringValue(acceptingCommunity!.contractParams.claimAmount)} cUSD</Paragraph>
+            <Paragraph><Text style={{ fontWeight: "bold" }}> - maxClaim:</Text> {bnToStringValue(acceptingCommunity!.contractParams.maxClaim)} cUSD</Paragraph>
+            <Paragraph><Text style={{ fontWeight: "bold" }}> - baseInterval:</Text> {(acceptingCommunity!.contractParams.baseInterval / 3600)}h</Paragraph>
+            <Paragraph><Text style={{ fontWeight: "bold" }}> - incrementInterval:</Text> {acceptingCommunity!.contractParams.incrementInterval / 60}m</Paragraph>
         </View>
-    )
+    ) : null;
 
     return (
         <>

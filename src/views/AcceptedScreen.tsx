@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import {
     DataTable,
 } from "react-native-paper";
-import { ICommunity } from "../../types";
+import { ICommunityInfo } from "../../types";
 import {
     getAllValidCommunities,
 } from "../services/api";
 
 export default function AcceptedScreen() {
-    const [validCommunities, setValidCommunities] = useState<ICommunity[]>([]);
+    const [validCommunities, setValidCommunities] = useState<ICommunityInfo[]>([]);
 
     useEffect(() => {
         const loadCommunities = async () => {

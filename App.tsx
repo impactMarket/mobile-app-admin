@@ -69,7 +69,7 @@ export default function App() {
     const handleLoginWithCelo = async () => {
         const requestId = "login";
         const dappName = "impactMarket - Admin";
-        const callback = Linking.makeUrl("login/");
+        const callback = Linking.makeUrl();
 
         requestAccountAddress({
             requestId,
