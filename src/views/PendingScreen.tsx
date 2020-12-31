@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import {
-    AsyncStorage,
     Alert, View
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
     List, Portal, Text, Button, Modal, Paragraph, Card
 } from "react-native-paper";
