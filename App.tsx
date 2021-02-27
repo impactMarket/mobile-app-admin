@@ -18,6 +18,7 @@ import {
 
 import HomeScreen from './src/views/HomeScreen';
 import PendingScreen from './src/views/PendingScreen';
+import { ipctColors } from './src/styles';
 // import AcceptedScreen from "./src/views/AcceptedScreen";
 
 LogBox.ignoreLogs([
@@ -30,14 +31,14 @@ const theme = {
     roundness: 4,
     colors: {
         ...DefaultTheme.colors,
-        primary: '#5e72e4',
+        primary: ipctColors.blueRibbon,
     },
 };
 const navigationTheme = {
     ...NavigationDefaultTheme,
     colors: {
         ...NavigationDefaultTheme.colors,
-        primary: '#5e72e4',
+        primary: ipctColors.blueRibbon,
         background: '#ffffff',
     },
 };
@@ -112,10 +113,6 @@ export default function App() {
                         component={HomeScreen}
                     />
                     <Stack.Screen name="Pending" component={PendingScreen} />
-                    {/* <Stack.Screen
-                        name="Accepted"
-                        component={AcceptedScreen}
-                    /> */}
                 </Stack.Navigator>
             </NavigationContainer>
         </PaperProvider>
