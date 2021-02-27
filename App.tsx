@@ -1,12 +1,9 @@
 import './global';
-import { requestAccountAddress, waitForAccountAuth } from '@celo/dappkit';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Linking } from 'expo';
-import React, { useState, useEffect } from 'react';
-import { View, StatusBar, LogBox } from 'react-native';
-import { Provider as PaperProvider, Button, Appbar } from 'react-native-paper';
+import React, { useState } from 'react';
+import { StatusBar, LogBox } from 'react-native';
+import { Provider as PaperProvider } from 'react-native-paper';
 
 import HomeScreen from './src/views/HomeScreen';
 import PendingScreen from './src/views/PendingScreen';
@@ -15,6 +12,13 @@ import combinedReducers from './src/helpers/redux';
 import { Provider } from 'react-redux';
 import { navigationTheme, theme } from './src/styles/theme';
 import { setUserWalletAddressState } from './src/helpers/redux/actions/user';
+import AppLoading from 'expo-app-loading';
+import LoginScreen from './src/views/Login';
+import {
+    loadImpactMarketContract,
+    loadUserWallet,
+    verifyAdminRole,
+} from './src/helpers';
 
 LogBox.ignoreLogs([
     "The provided value 'moz-chunked-arraybuffer' is not a valid 'responseType'.",
@@ -22,64 +26,31 @@ LogBox.ignoreLogs([
 ]);
 
 const store = createStore(combinedReducers);
-
-const WALLET_ADDRESS = 'WALLET_ADDRESS';
 const Stack = createStackNavigator();
+
 export default function App() {
-    const [userAddress, setUserAddress] = useState<string | null>(null);
+    const [isReady, setIsReady] = useState(false);
+    const [isUserLoged, setIsUserLoged] = useState(false);
 
-    useEffect(() => {
-        const loadCommunities = async () => {
-            try {
-                const _userAddress = await AsyncStorage.getItem(WALLET_ADDRESS);
-                if (_userAddress) {
-                    setUserAddress(_userAddress);
-                    setUserWalletAddressState(_userAddress);
-                }
-            } catch (e) {
-            } finally {
-            }
-        };
-        loadCommunities();
-    }, []);
-
-    const handleLoginWithCelo = async () => {
-        const requestId = 'login';
-        const dappName = 'impactMarket - Admin';
-        const callback = Linking.makeUrl();
-
-        requestAccountAddress({
-            requestId,
-            dappName,
-            callback,
-        });
-
-        const dappkitResponse = await waitForAccountAuth(requestId);
-        try {
-            await AsyncStorage.setItem(WALLET_ADDRESS, dappkitResponse.address);
-            setUserAddress(dappkitResponse.address);
-        } catch (error) {
-            // Error saving data
-            console.log(error);
+    const _cacheResourcesAsync = async () => {
+        // load user
+        const wallet = await loadUserWallet();
+        const ipctContract = loadImpactMarketContract();
+        const is = await verifyAdminRole(ipctContract, wallet);
+        setUserWalletAddressState(wallet);
+        if (wallet.length > 0) {
+            setIsUserLoged(true);
         }
+        // setIsAdmin(is);
     };
 
-    if (userAddress === null) {
+    if (!isReady) {
         return (
-            <PaperProvider theme={theme}>
-                <View>
-                    <Appbar.Header>
-                        <Appbar.Content title="Admin" />
-                    </Appbar.Header>
-                    <Button
-                        mode="contained"
-                        onPress={handleLoginWithCelo}
-                        style={{ margin: 15 }}
-                    >
-                        Login
-                    </Button>
-                </View>
-            </PaperProvider>
+            <AppLoading
+                startAsync={_cacheResourcesAsync}
+                onFinish={() => setIsReady(true)}
+                onError={console.warn}
+            />
         );
     }
 
@@ -89,17 +60,29 @@ export default function App() {
             <Provider store={store}>
                 <NavigationContainer theme={navigationTheme}>
                     <Stack.Navigator>
-                        <Stack.Screen
-                            options={{
-                                headerShown: false,
-                            }}
-                            name="Home"
-                            component={HomeScreen}
-                        />
-                        <Stack.Screen
-                            name="Pending"
-                            component={PendingScreen}
-                        />
+                        {isUserLoged ? (
+                            <>
+                                <Stack.Screen
+                                    options={{
+                                        headerShown: false,
+                                    }}
+                                    name="Home"
+                                    component={HomeScreen}
+                                />
+                                <Stack.Screen
+                                    name="Pending"
+                                    component={PendingScreen}
+                                />
+                            </>
+                        ) : (
+                            <Stack.Screen
+                                options={{
+                                    headerShown: false,
+                                }}
+                                name="Login"
+                                component={LoginScreen}
+                            />
+                        )}
                     </Stack.Navigator>
                 </NavigationContainer>
             </Provider>
