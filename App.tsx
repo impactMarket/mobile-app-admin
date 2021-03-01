@@ -2,16 +2,19 @@ import './global';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useState } from 'react';
-import { StatusBar, LogBox } from 'react-native';
+import { StyleSheet, LogBox, View, Text, SafeAreaView } from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
 
 import HomeScreen from './src/views/HomeScreen';
-import PendingScreen from './src/views/PendingScreen';
+import PendingScreen from './src/views/ubi/PendingScreen';
 import { createStore } from 'redux';
 import combinedReducers from './src/helpers/redux';
-import { Provider } from 'react-redux';
+import { batch, Provider } from 'react-redux';
 import { navigationTheme, theme } from './src/styles/theme';
-import { setUserWalletAddressState } from './src/helpers/redux/actions/user';
+import {
+    setIsAdminState,
+    setUserWalletAddressState,
+} from './src/helpers/redux/actions/user';
 import AppLoading from 'expo-app-loading';
 import LoginScreen from './src/views/Login';
 import {
@@ -19,6 +22,11 @@ import {
     loadUserWallet,
     verifyAdminRole,
 } from './src/helpers';
+import UBIScreen from './src/views/ubi';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { AntDesign } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { ipctColors } from './src/styles';
 
 LogBox.ignoreLogs([
     "The provided value 'moz-chunked-arraybuffer' is not a valid 'responseType'.",
@@ -26,23 +34,59 @@ LogBox.ignoreLogs([
 ]);
 
 const store = createStore(combinedReducers);
-const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+const NotLoggedStack = createStackNavigator();
+const UBIStack = createStackNavigator();
+
+function UBIStackScreen() {
+    return (
+        <UBIStack.Navigator>
+            <UBIStack.Screen
+                options={{
+                    headerShown: false,
+                }}
+                name="UBIScreen"
+                component={UBIScreen}
+            />
+            <UBIStack.Screen name="Pending" component={PendingScreen} />
+        </UBIStack.Navigator>
+    );
+}
 
 export default function App() {
     const [isReady, setIsReady] = useState(false);
     const [isUserLoged, setIsUserLoged] = useState(false);
+    const [errorLoading, setErrorLoading] = useState('');
 
     const _cacheResourcesAsync = async () => {
-        // load user
-        const wallet = await loadUserWallet();
-        const ipctContract = loadImpactMarketContract();
-        const is = await verifyAdminRole(ipctContract, wallet);
-        setUserWalletAddressState(wallet);
-        if (wallet.length > 0) {
-            setIsUserLoged(true);
+        try {
+            // load user
+            const wallet = await loadUserWallet();
+            const ipctContract = loadImpactMarketContract();
+            if (wallet !== null) {
+                const is = await verifyAdminRole(ipctContract, wallet);
+                batch(() => {
+                    store.dispatch(setUserWalletAddressState(wallet));
+                    store.dispatch(setIsAdminState(is));
+                });
+                await new Promise((resolve) => {
+                    setTimeout(resolve, 10000);
+                });
+                setIsUserLoged(true);
+            }
+            console.log(wallet);
+        } catch (e) {
+            setErrorLoading(JSON.stringify(e));
         }
-        // setIsAdmin(is);
     };
+
+    if (errorLoading.length > 0) {
+        return (
+            <View>
+                <Text>Error loading: {errorLoading}</Text>
+            </View>
+        );
+    }
 
     if (!isReady) {
         return (
@@ -55,37 +99,68 @@ export default function App() {
     }
 
     return (
-        <PaperProvider theme={theme}>
-            <StatusBar backgroundColor="rgba(0, 0, 0, 0.2)" translucent />
-            <Provider store={store}>
-                <NavigationContainer theme={navigationTheme}>
-                    <Stack.Navigator>
+        <SafeAreaView style={styles.container}>
+            <PaperProvider theme={theme}>
+                {/* <StatusBar backgroundColor="rgba(0, 0, 0, 0.2)" translucent /> */}
+                <Provider store={store}>
+                    <NavigationContainer theme={navigationTheme}>
                         {isUserLoged ? (
-                            <>
-                                <Stack.Screen
+                            <Tab.Navigator>
+                                <Tab.Screen
+                                    name="Home"
+                                    component={HomeScreen}
+                                    options={{
+                                        tabBarIcon: (props) => (
+                                            <AntDesign
+                                                name="home"
+                                                size={24}
+                                                color={
+                                                    props.focused
+                                                        ? ipctColors.blueRibbon
+                                                        : 'grey'
+                                                }
+                                            />
+                                        ),
+                                    }}
+                                />
+                                <Tab.Screen
+                                    name="UBI"
+                                    component={UBIStackScreen}
+                                    options={{
+                                        tabBarIcon: (props) => (
+                                            <FontAwesome5
+                                                name="hand-holding-heart"
+                                                size={24}
+                                                color={
+                                                    props.focused
+                                                        ? ipctColors.blueRibbon
+                                                        : 'grey'
+                                                }
+                                            />
+                                        ),
+                                    }}
+                                />
+                            </Tab.Navigator>
+                        ) : (
+                            <NotLoggedStack.Navigator>
+                                <NotLoggedStack.Screen
                                     options={{
                                         headerShown: false,
                                     }}
-                                    name="Home"
-                                    component={HomeScreen}
+                                    name="Login"
+                                    component={LoginScreen}
                                 />
-                                <Stack.Screen
-                                    name="Pending"
-                                    component={PendingScreen}
-                                />
-                            </>
-                        ) : (
-                            <Stack.Screen
-                                options={{
-                                    headerShown: false,
-                                }}
-                                name="Login"
-                                component={LoginScreen}
-                            />
+                            </NotLoggedStack.Navigator>
                         )}
-                    </Stack.Navigator>
-                </NavigationContainer>
-            </Provider>
-        </PaperProvider>
+                    </NavigationContainer>
+                </Provider>
+            </PaperProvider>
+        </SafeAreaView>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+});

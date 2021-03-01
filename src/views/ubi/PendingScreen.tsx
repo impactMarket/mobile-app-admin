@@ -15,16 +15,16 @@ import {
     Snackbar,
 } from 'react-native-paper';
 
-import config from '../../config';
-import { kit } from '../../root';
-import { ICommunityPendingDetails } from '../../types';
-import ImpactMarketAbi from '../contracts/ImpactMarketABI.json';
+import config from '../../../config';
+import { kit } from '../../../root';
+import { ICommunityPendingDetails } from '../../../types';
+import ImpactMarketAbi from '../../contracts/ImpactMarketABI.json';
 import {
     getAllPendingCommunities,
     acceptCreateCommunity,
     removeCommunity,
-} from '../services/api';
-import { celoWalletRequest } from '../services/celoWallet';
+} from '../../services/api';
+import { celoWalletRequest } from '../../services/celoWallet';
 
 const WALLET_ADDRESS = 'WALLET_ADDRESS';
 

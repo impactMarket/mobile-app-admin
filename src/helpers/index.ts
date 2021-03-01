@@ -4,6 +4,7 @@ import config from '../../config';
 import { kit } from '../../root';
 import ImpactMarketAbi from '../contracts/ImpactMarketABI.json';
 import { Contract } from 'web3-eth-contract';
+import { AppData } from './constants';
 
 export function loadImpactMarketContract() {
     const impactMarketContract = new kit.web3.eth.Contract(
@@ -14,9 +15,8 @@ export function loadImpactMarketContract() {
 }
 
 export async function loadUserWallet() {
-    const WALLET_ADDRESS = 'WALLET_ADDRESS';
-    const _userAddress = await AsyncStorage.getItem(WALLET_ADDRESS);
-    return _userAddress!;
+    const _userAddress = await AsyncStorage.getItem(AppData.WALLET_ADDRESS);
+    return _userAddress;
 }
 
 export async function verifyAdminRole(

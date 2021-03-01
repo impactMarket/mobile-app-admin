@@ -1,55 +1,24 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { View, DevSettings } from 'react-native';
-import {
-    Button,
-    Appbar,
-    Paragraph,
-    Text,
-    ActivityIndicator,
-} from 'react-native-paper';
+import { Button, Appbar, Paragraph, Text, Headline } from 'react-native-paper';
+import { useSelector } from 'react-redux';
 
 import config from '../../config';
-import {
-    loadImpactMarketContract,
-    loadUserWallet,
-    verifyAdminRole,
-} from '../helpers';
+import { IRootState } from '../helpers/types';
 
 export default function HomeScreen() {
     const navigation = useNavigation();
-    const [userAddress, setUserAddress] = useState<string | null>(null);
-    const [isAdmin, setIsAdmin] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const userWalletAddress = useSelector(
+        (state: IRootState) => state.user.address
+    );
+    const userIsAdmin = useSelector((state: IRootState) => state.user.isAdmin);
 
-    useEffect(() => {
-        loadUserWallet().then((wallet) => {
-            setUserAddress(wallet);
-            const ipctContract = loadImpactMarketContract();
-            verifyAdminRole(ipctContract, wallet).then((is) => {
-                setIsAdmin(is);
-                setLoading(false);
-            });
-        });
-    }, []);
+    console.log('d1', userWalletAddress);
 
-    if (loading) {
-        return (
-            <View
-                style={{
-                    flex: 1,
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                }}
-            >
-                <ActivityIndicator />
-            </View>
-        );
-    }
-
-    if (userAddress === null) {
+    if (userWalletAddress.length === 0) {
         return <View />;
     }
 
@@ -65,35 +34,30 @@ export default function HomeScreen() {
                     }}
                 />
             </Appbar.Header>
-            <View style={{ margin: 10 }}>
+            <View
+                style={{
+                    // marginTop: 10,
+                    marginHorizontal: 10,
+                    alignItems: 'center',
+                }}
+            >
+                <Headline>Your address</Headline>
                 <Paragraph>
-                    <Text style={{ fontWeight: 'bold' }}>Your address:</Text>{' '}
-                    {userAddress.slice(0, 8)}...{userAddress.slice(36, 42)}
+                    {userWalletAddress.slice(0, 8)}...
+                    {userWalletAddress.slice(36, 42)}
                 </Paragraph>
+                <Headline>ImpactMarket address</Headline>
                 <Paragraph>
-                    <Text style={{ fontWeight: 'bold' }}>
-                        ImpactMarket address:
-                    </Text>{' '}
                     {config.impactMarketContractAddress.slice(0, 8)}...
                     {config.impactMarketContractAddress.slice(36, 42)}
                 </Paragraph>
-                <Paragraph>
-                    <Text style={{ fontWeight: 'bold' }}>isAdmin:</Text>{' '}
-                    {isAdmin ? 'true' : 'false'}
-                </Paragraph>
-                <Paragraph>
-                    <Text style={{ fontWeight: 'bold' }}>isTestnet:</Text>{' '}
-                    {config.testnet ? 'true' : 'false'}
-                </Paragraph>
-                <Button
-                    mode="contained"
-                    style={{ marginVertical: 10 }}
-                    onPress={() => navigation.navigate('Pending')}
-                >
-                    Go to Pending
-                </Button>
+                <Headline>isAdmin</Headline>
+                <Paragraph>{userIsAdmin ? 'true' : 'false'}</Paragraph>
+                <Headline>isTestnet</Headline>
+                <Paragraph>{config.testnet ? 'true' : 'false'}</Paragraph>
+                <Headline>Build</Headline>
+                <Paragraph>{Constants.manifest.version}</Paragraph>
             </View>
-            <Paragraph>Build: {Constants.manifest.version}</Paragraph>
         </View>
     );
 }
