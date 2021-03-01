@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { StyleSheet, LogBox, View, Text, SafeAreaView } from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
 
-import HomeScreen from './src/views/HomeScreen';
+import HomeScreen from './src/views/home';
 import PendingScreen from './src/views/ubi/PendingScreen';
 import { createStore } from 'redux';
 import combinedReducers from './src/helpers/redux';
@@ -16,7 +16,7 @@ import {
     setUserWalletAddressState,
 } from './src/helpers/redux/actions/user';
 import AppLoading from 'expo-app-loading';
-import LoginScreen from './src/views/Login';
+import LoginScreen from './src/views/login';
 import {
     loadImpactMarketContract,
     loadUserWallet,
@@ -27,6 +27,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AntDesign } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { ipctColors } from './src/styles';
+import StoriesScreen from './src/views/stories';
 
 LogBox.ignoreLogs([
     "The provided value 'moz-chunked-arraybuffer' is not a valid 'responseType'.",
@@ -130,6 +131,23 @@ export default function App() {
                                         tabBarIcon: (props) => (
                                             <FontAwesome5
                                                 name="hand-holding-heart"
+                                                size={24}
+                                                color={
+                                                    props.focused
+                                                        ? ipctColors.blueRibbon
+                                                        : 'grey'
+                                                }
+                                            />
+                                        ),
+                                    }}
+                                />
+                                <Tab.Screen
+                                    name="Stories"
+                                    component={StoriesScreen}
+                                    options={{
+                                        tabBarIcon: (props) => (
+                                            <AntDesign
+                                                name="camera"
                                                 size={24}
                                                 color={
                                                     props.focused

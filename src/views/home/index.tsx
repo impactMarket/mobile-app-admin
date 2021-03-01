@@ -6,8 +6,8 @@ import { View, DevSettings } from 'react-native';
 import { Button, Appbar, Paragraph, Text, Headline } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 
-import config from '../../config';
-import { IRootState } from '../helpers/types';
+import config from '../../../config';
+import { IRootState } from '../../helpers/types';
 
 export default function HomeScreen() {
     const navigation = useNavigation();
