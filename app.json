@@ -3,12 +3,8 @@
         "name": "impactMarketAdmin",
         "slug": "impact-market-admin",
         "privacy": "public",
-        "platforms": [
-            "ios",
-            "android",
-            "web"
-        ],
-        "version": "0.0.5",
+        "platforms": ["ios", "android", "web"],
+        "version": "0.1.0",
         "orientation": "portrait",
         "icon": "./src/assets/icon.png",
         "scheme": "impactmarketadmin",
@@ -20,16 +16,14 @@
         "updates": {
             "fallbackToCacheTimeout": 0
         },
-        "assetBundlePatterns": [
-            "**/*"
-        ],
+        "assetBundlePatterns": ["**/*"],
         "ios": {
             "bundleIdentifier": "com.impactmarket.admin.mobile",
-            "buildNumber": "0.0.5"
+            "buildNumber": "0.1.0"
         },
         "android": {
             "package": "com.impactmarket.admin.mobile",
-            "versionCode": 17
+            "versionCode": 18
         },
         "description": "ImpactMarket Admin",
         "githubUrl": "https://github.com/impactMarket/mobile-app-admin"
